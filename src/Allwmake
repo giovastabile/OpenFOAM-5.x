@@ -51,6 +51,7 @@ wmake $targetType dynamicMesh
 wmake $targetType sampling
 wmake $targetType dynamicFvMesh
 wmake $targetType topoChangerFvMesh
+wmake $targetType RBFMotionSolver
 
 # Compile scotchDecomp, metisDecomp etc.
 parallel/Allwmake $targetType $*

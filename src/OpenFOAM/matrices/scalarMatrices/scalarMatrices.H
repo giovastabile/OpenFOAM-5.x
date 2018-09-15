@@ -43,6 +43,11 @@ SourceFiles
 #include "RectangularMatrix.H"
 #include "SquareMatrix.H"
 #include "SymmetricSquareMatrix.H"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#include "Eigen/Eigen"
+#pragma GCC diagnostic pop
+
 #include "DiagonalMatrix.H"
 #include "scalarField.H"
 #include "labelList.H"
@@ -159,6 +164,11 @@ scalarRectangularMatrix SVDinv
     const scalarRectangularMatrix& A,
     scalar minCondition = 0
 );
+
+//- Invert the matrix using LU decomposition with pivoting
+SquareMatrix<double> LUinvert(SquareMatrix<double>& A);
+
+SquareMatrix<double> EigenInvert(SquareMatrix<double>& A);
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

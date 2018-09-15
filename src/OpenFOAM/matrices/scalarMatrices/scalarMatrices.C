@@ -331,5 +331,66 @@ Foam::scalarRectangularMatrix Foam::SVDinv
     return svd.VSinvUt();
 }
 
+Foam::SquareMatrix<double> Foam::EigenInvert(Foam::SquareMatrix<double>& A)
+{
+    Foam::SquareMatrix<double> invMatrix = A;
+    Eigen::MatrixXd Aeig(A.n(), A.n());
+    Eigen::MatrixXd one = Eigen::MatrixXd::Identity(A.n(), A.n());
+
+    for (int i = 0; i < A.n(); i++)
+    {
+        for (int k = 0; k < A.n(); k++)
+        {
+            Aeig(i, k) = A[i][k];
+        }
+    }
+
+
+    //Eigen::MatrixXd invEig = Aeig.inverse();
+    Eigen::MatrixXd invEig = Aeig.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(one);
+
+    for (int i = 0; i < invEig.rows(); i++)
+    {
+        for (int k = 0; k < invEig.cols(); k++)
+        {
+            invMatrix[i][k] = invEig(i,k);
+        }
+    }
+    return invMatrix;
+}
+
+
+
+Foam::SquareMatrix<double> Foam::LUinvert(Foam::SquareMatrix<double>& A)
+{
+    Foam::SquareMatrix<double> luMatrix = A;
+
+    Foam::SquareMatrix<double> luInvert(luMatrix.n());
+    Foam::scalarField column(luMatrix.n());
+
+    Foam::labelList pivotIndices(luMatrix.n());
+
+    LUDecompose(luMatrix, pivotIndices);
+
+    for (Foam::label j = 0; j < luMatrix.n(); j++)
+    {
+        for (Foam::label i = 0; i < luMatrix.n(); i++)
+        {
+            column[i] = 0.0;
+        }
+
+        column[j] = 1.0;
+
+        LUBacksubstitute(luMatrix, pivotIndices, column);
+
+        for (Foam::label i = 0; i < luMatrix.n(); i++)
+        {
+            luInvert[i][j] = column[i];
+        }
+    }
+
+    return luInvert;
+}
+
 
 // ************************************************************************* //
